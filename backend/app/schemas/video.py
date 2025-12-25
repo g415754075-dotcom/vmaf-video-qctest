@@ -107,6 +107,7 @@ class AssessmentCreate(BaseModel):
 class AssessmentResponse(BaseModel):
     """评估任务响应"""
     id: int
+    batch_id: Optional[str] = None  # 批量评估标识
     reference_video_id: int
     distorted_video_id: int
     status: TaskStatus
@@ -243,3 +244,31 @@ class ShareLinkResponse(BaseModel):
     """分享链接响应"""
     share_url: str
     expires_at: datetime
+
+
+# ============ 批量评估相关 ============
+
+class BatchAssessmentCreate(BaseModel):
+    """创建批量评估任务"""
+    reference_video_id: int
+    distorted_video_ids: List[int] = Field(..., min_length=1, max_length=10)
+
+
+class BatchAssessmentResponse(BaseModel):
+    """批量评估响应"""
+    batch_id: str
+    reference_video: VideoResponse
+    assessments: List[AssessmentDetailResponse]
+    total_count: int
+    completed_count: int
+    failed_count: int
+    progress: float  # 整体进度 0-100
+
+    class Config:
+        from_attributes = True
+
+
+class BatchAssessmentListResponse(BaseModel):
+    """批量评估列表响应"""
+    batches: List[BatchAssessmentResponse]
+    total: int

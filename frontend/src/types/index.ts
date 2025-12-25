@@ -25,6 +25,7 @@ export interface Video {
 // 评估任务
 export interface Assessment {
   id: number
+  batch_id?: string  // 批量评估标识
   reference_video_id: number
   distorted_video_id: number
   status: TaskStatus
@@ -112,4 +113,15 @@ export interface ApiResponse<T> {
 export interface ListResponse<T> {
   items: T[]
   total: number
+}
+
+// 批量评估
+export interface BatchAssessment {
+  batch_id: string
+  reference_video: Video
+  assessments: AssessmentDetail[]
+  total_count: number
+  completed_count: number
+  failed_count: number
+  progress: number
 }

@@ -1,8 +1,55 @@
 import { useEffect, useState } from 'react'
-import { RefreshCw, Download, Share2, Trash2, FileText, Table, Code } from 'lucide-react'
-import { getReports, deleteReport, createShareLink, getDownloadUrl } from '@/services/api'
+import { RefreshCw, Share2, Trash2, FileText, Table, Code, Image, ChevronDown } from 'lucide-react'
+import { getReports, deleteReport, createShareLink, getDownloadUrl, getImageDownloadUrl, clearAllReports } from '@/services/api'
 import { formatDate, cn } from '@/utils'
 import type { Report } from '@/types'
+
+// 图片下载下拉菜单组件
+function ImageDownloadMenu({ reportId }: { reportId: number }) {
+  const [isOpen, setIsOpen] = useState(false)
+
+  const imageOptions = [
+    { type: 'combined' as const, label: '合并图（三图并排）' },
+    { type: 'bitrate_vs_size' as const, label: '码率 vs 文件大小' },
+    { type: 'bitrate_vs_vmaf' as const, label: '码率 vs VMAF' },
+    { type: 'vmaf_vs_size' as const, label: 'VMAF vs 文件大小' },
+  ]
+
+  const handleDownloadImage = (imageType: 'combined' | 'bitrate_vs_size' | 'bitrate_vs_vmaf' | 'vmaf_vs_size') => {
+    window.open(getImageDownloadUrl(reportId, imageType), '_blank')
+    setIsOpen(false)
+  }
+
+  return (
+    <div className="relative">
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        className="p-1.5 text-purple-600 hover:bg-purple-50 rounded flex items-center"
+        title="下载图片"
+      >
+        <Image className="h-5 w-5" />
+        <ChevronDown className="h-3 w-3 ml-0.5" />
+      </button>
+
+      {isOpen && (
+        <>
+          <div className="fixed inset-0 z-10" onClick={() => setIsOpen(false)} />
+          <div className="absolute right-0 top-full mt-1 z-20 bg-white border border-gray-200 rounded-lg shadow-lg py-1 min-w-[180px]">
+            {imageOptions.map((opt) => (
+              <button
+                key={opt.type}
+                onClick={() => handleDownloadImage(opt.type)}
+                className="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-100"
+              >
+                {opt.label}
+              </button>
+            ))}
+          </div>
+        </>
+      )}
+    </div>
+  )
+}
 
 export default function ReportsPage() {
   const [reports, setReports] = useState<Report[]>([])
@@ -52,6 +99,22 @@ export default function ReportsPage() {
     window.open(getDownloadUrl(reportId, format), '_blank')
   }
 
+  const handleClearAll = async () => {
+    if (!confirm('确定要清空所有报告吗？此操作无法恢复！')) return
+
+    setLoading(true)
+    try {
+      const result = await clearAllReports()
+      alert(result.message)
+      loadReports()
+    } catch (error) {
+      console.error('清空报告失败:', error)
+      alert('清空报告失败')
+    } finally {
+      setLoading(false)
+    }
+  }
+
   return (
     <div className="space-y-6">
       {/* 页面标题 */}
@@ -60,14 +123,26 @@ export default function ReportsPage() {
           <h1 className="text-2xl font-bold text-gray-900">评估报告</h1>
           <p className="text-gray-600 mt-1">查看和下载质量评估报告</p>
         </div>
-        <button
-          onClick={loadReports}
-          className="flex items-center px-4 py-2 text-gray-600 hover:text-gray-900 border border-gray-300 rounded-lg hover:bg-gray-50"
-          disabled={loading}
-        >
-          <RefreshCw className={`h-5 w-5 mr-2 ${loading ? 'animate-spin' : ''}`} />
-          刷新
-        </button>
+        <div className="flex space-x-3">
+          {reports.length > 0 && (
+            <button
+              onClick={handleClearAll}
+              disabled={loading}
+              className="flex items-center px-4 py-2 text-red-600 hover:text-red-700 border border-red-300 rounded-lg hover:bg-red-50"
+            >
+              <Trash2 className="h-5 w-5 mr-2" />
+              清空全部
+            </button>
+          )}
+          <button
+            onClick={loadReports}
+            className="flex items-center px-4 py-2 text-gray-600 hover:text-gray-900 border border-gray-300 rounded-lg hover:bg-gray-50"
+            disabled={loading}
+          >
+            <RefreshCw className={`h-5 w-5 mr-2 ${loading ? 'animate-spin' : ''}`} />
+            刷新
+          </button>
+        </div>
       </div>
 
       {/* 报告列表 */}
@@ -95,10 +170,12 @@ export default function ReportsPage() {
                         'inline-flex px-2 py-1 text-xs font-medium rounded',
                         report.report_type === 'single'
                           ? 'bg-blue-100 text-blue-700'
+                          : report.report_type === 'batch'
+                          ? 'bg-green-100 text-green-700'
                           : 'bg-purple-100 text-purple-700'
                       )}
                     >
-                      {report.report_type === 'single' ? '单视频' : '对比'}
+                      {report.report_type === 'single' ? '单视频' : report.report_type === 'batch' ? '批量对比' : '对比'}
                     </span>
                   </td>
                   <td className="py-4 px-4 text-sm text-gray-500">{formatDate(report.created_at)}</td>
@@ -130,6 +207,10 @@ export default function ReportsPage() {
                         >
                           <Code className="h-5 w-5" />
                         </button>
+                      )}
+                      {/* 图片下载按钮（仅批量报告显示） */}
+                      {(report.report_type === 'batch' || report.report_type === 'comparison') && (
+                        <ImageDownloadMenu reportId={report.id} />
                       )}
                     </div>
                   </td>

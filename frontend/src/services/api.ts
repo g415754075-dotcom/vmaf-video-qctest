@@ -1,8 +1,11 @@
 import axios from 'axios'
-import type { Video, Assessment, AssessmentDetail, Report, FrameQuality, ComparisonItem } from '@/types'
+import type { Video, Assessment, AssessmentDetail, Report, FrameQuality, ComparisonItem, BatchAssessment } from '@/types'
+
+// 生产环境使用环境变量配置的 API URL，开发环境使用代理
+const API_BASE_URL = import.meta.env.VITE_API_URL || ''
 
 const api = axios.create({
-  baseURL: '/api',
+  baseURL: `${API_BASE_URL}/api`,
   timeout: 30000,
 })
 
@@ -25,6 +28,21 @@ export async function updateVideoType(id: number, videoType: string) {
 
 export async function deleteVideo(id: number) {
   await api.delete(`/videos/${id}`)
+}
+
+export async function batchDeleteVideos(videoIds: number[]) {
+  const response = await api.post<{ message: string; deleted_count: number; failed_ids: number[] }>(
+    '/videos/batch-delete',
+    { video_ids: videoIds }
+  )
+  return response.data
+}
+
+export async function clearAllVideos() {
+  const response = await api.delete<{ message: string; deleted_count: number; failed_count: number }>(
+    '/videos/clear-all'
+  )
+  return response.data
 }
 
 // ============ 上传相关 ============
@@ -121,6 +139,21 @@ export async function cancelAssessment(id: number) {
   return response.data
 }
 
+export async function batchDeleteAssessments(assessmentIds: number[]) {
+  const response = await api.post<{ message: string; deleted_count: number; failed_ids: number[] }>(
+    '/assessments/batch-delete',
+    { assessment_ids: assessmentIds }
+  )
+  return response.data
+}
+
+export async function clearAllAssessments() {
+  const response = await api.delete<{ message: string; deleted_count: number; skipped_count: number; running_count: number }>(
+    '/assessments/clear-all'
+  )
+  return response.data
+}
+
 export async function getFrameData(id: number, params?: { skip?: number; limit?: number }) {
   const response = await api.get<{ assessment_id: number; frames: FrameQuality[]; total_frames: number }>(
     `/assessments/${id}/frames`,
@@ -145,6 +178,28 @@ export async function compareAssessments(assessmentIds: number[]) {
   const response = await api.post<{ items: ComparisonItem[]; reference_video: Video }>('/assessments/compare', {
     assessment_ids: assessmentIds,
   })
+  return response.data
+}
+
+// ============ 批量评估相关 ============
+
+export async function createBatchAssessment(referenceVideoId: number, distortedVideoIds: number[]) {
+  const response = await api.post<BatchAssessment>('/assessments/batch', {
+    reference_video_id: referenceVideoId,
+    distorted_video_ids: distortedVideoIds,
+  })
+  return response.data
+}
+
+export async function getBatchStatus(batchId: string) {
+  const response = await api.get<BatchAssessment>(`/assessments/batch/${batchId}`)
+  return response.data
+}
+
+export async function createBatchReport(batchId: string) {
+  const response = await api.post<{ report_id: number; name: string; message: string }>(
+    `/assessments/batch/${batchId}/report`
+  )
   return response.data
 }
 
@@ -173,6 +228,21 @@ export async function deleteReport(id: number) {
   await api.delete(`/reports/${id}`)
 }
 
+export async function batchDeleteReports(reportIds: number[]) {
+  const response = await api.post<{ message: string; deleted_count: number; failed_ids: number[] }>(
+    '/reports/batch-delete',
+    { report_ids: reportIds }
+  )
+  return response.data
+}
+
+export async function clearAllReports() {
+  const response = await api.delete<{ message: string; deleted_count: number; failed_count: number }>(
+    '/reports/clear-all'
+  )
+  return response.data
+}
+
 export async function createShareLink(id: number, expiresDays: number = 7) {
   const response = await api.post<{ share_url: string; expires_at: string }>(`/reports/${id}/share`, null, {
     params: { expires_days: expiresDays },
@@ -181,7 +251,35 @@ export async function createShareLink(id: number, expiresDays: number = 7) {
 }
 
 export function getDownloadUrl(reportId: number, format: 'pdf' | 'excel' | 'json') {
-  return `/api/reports/${reportId}/download/${format}`
+  return `${API_BASE_URL}/api/reports/${reportId}/download/${format}`
+}
+
+// 获取图片下载 URL
+export function getImageDownloadUrl(
+  reportId: number,
+  imageType: 'combined' | 'bitrate_vs_size' | 'bitrate_vs_vmaf' | 'vmaf_vs_size'
+) {
+  return `${API_BASE_URL}/api/reports/${reportId}/download/image/${imageType}`
+}
+
+// 获取静态资源 URL（uploads、reports 目录）
+export function getStaticUrl(path: string) {
+  return `${API_BASE_URL}${path.startsWith('/') ? path : '/' + path}`
+}
+
+// 获取报告的可用图片列表
+export async function getReportImages(reportId: number) {
+  const response = await api.get<{
+    report_id: number
+    report_name: string
+    images: Array<{
+      type: string
+      name: string
+      description: string
+      download_url: string
+    }>
+  }>(`/reports/${reportId}/images`)
+  return response.data
 }
 
 // ============ 配置相关 ============

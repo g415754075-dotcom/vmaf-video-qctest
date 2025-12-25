@@ -75,6 +75,9 @@ class Assessment(Base):
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
 
+    # 批量评估标识（可选，用于关联同一批次的评估任务）
+    batch_id: Mapped[Optional[str]] = mapped_column(String(36), index=True, nullable=True)
+
     # 关联视频
     reference_video_id: Mapped[int] = mapped_column(
         Integer, ForeignKey("videos.id"), nullable=False

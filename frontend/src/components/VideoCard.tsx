@@ -1,5 +1,6 @@
 import { Video as VideoIcon, Clock, Film, Trash2, Star } from 'lucide-react'
 import { cn, formatFileSize, formatDuration, formatBitrate } from '@/utils'
+import { getStaticUrl } from '@/services/api'
 import type { Video } from '@/types'
 
 interface VideoCardProps {
@@ -31,7 +32,7 @@ export default function VideoCard({
       <div className="relative aspect-video bg-gray-100">
         {video.thumbnail_path ? (
           <img
-            src={video.thumbnail_path}
+            src={getStaticUrl(video.thumbnail_path)}
             alt={video.original_filename}
             className="w-full h-full object-cover"
           />

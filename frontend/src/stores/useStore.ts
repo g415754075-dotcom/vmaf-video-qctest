@@ -26,6 +26,13 @@ interface AppState {
   referenceVideoId: number | null
   setReferenceVideoId: (id: number | null) => void
 
+  // 选中的待测视频（用于批量评估）
+  selectedDistortedIds: number[]
+  addDistortedId: (id: number) => void
+  removeDistortedId: (id: number) => void
+  toggleDistortedId: (id: number) => void
+  clearDistortedIds: () => void
+
   // 上传状态
   uploadingFiles: Map<string, { progress: number; status: string }>
   setUploadProgress: (filename: string, progress: number, status: string) => void
@@ -68,6 +75,28 @@ export const useStore = create<AppState>((set) => ({
   // 参考视频
   referenceVideoId: null,
   setReferenceVideoId: (id) => set({ referenceVideoId: id }),
+
+  // 选中的待测视频（用于批量评估）
+  selectedDistortedIds: [],
+  addDistortedId: (id) =>
+    set((state) => ({
+      selectedDistortedIds: state.selectedDistortedIds.includes(id)
+        ? state.selectedDistortedIds
+        : [...state.selectedDistortedIds, id],
+    })),
+  removeDistortedId: (id) =>
+    set((state) => ({
+      selectedDistortedIds: state.selectedDistortedIds.filter((vid) => vid !== id),
+    })),
+  toggleDistortedId: (id) =>
+    set((state) => ({
+      selectedDistortedIds: state.selectedDistortedIds.includes(id)
+        ? state.selectedDistortedIds.filter((vid) => vid !== id)
+        : state.selectedDistortedIds.length < 10  // 最多 10 个
+          ? [...state.selectedDistortedIds, id]
+          : state.selectedDistortedIds,
+    })),
+  clearDistortedIds: () => set({ selectedDistortedIds: [] }),
 
   // 上传状态
   uploadingFiles: new Map(),

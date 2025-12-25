@@ -44,6 +44,9 @@ reports/*
 .DS_Store
 Thumbs.db
 
+# 归档文件
+*.tar.gz
+
 # 测试覆盖率
 .coverage
 htmlcov/

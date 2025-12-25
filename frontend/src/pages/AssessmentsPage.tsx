@@ -1,9 +1,9 @@
 import { useEffect, useState, useRef } from 'react'
-import { RefreshCw, Plus } from 'lucide-react'
+import { RefreshCw, Plus, Trash2 } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import AssessmentCard from '@/components/AssessmentCard'
 import { useStore } from '@/stores/useStore'
-import { getAssessments, startAssessment, cancelAssessment } from '@/services/api'
+import { getAssessments, startAssessment, cancelAssessment, clearAllAssessments } from '@/services/api'
 
 export default function AssessmentsPage() {
   const { assessments, setAssessments, updateAssessment } = useStore()
@@ -66,6 +66,27 @@ export default function AssessmentsPage() {
     }
   }
 
+  // 清空所有任务
+  const handleClearAll = async () => {
+    if (!confirm('确定要清空所有评估任务吗？运行中的任务将被跳过。此操作无法恢复！')) return
+
+    setLoading(true)
+    try {
+      const result = await clearAllAssessments()
+      let message = result.message
+      if (result.running_count > 0) {
+        message += `（${result.running_count} 个运行中的任务被跳过）`
+      }
+      alert(message)
+      loadAssessments()
+    } catch (error) {
+      console.error('清空任务失败:', error)
+      alert('清空任务失败')
+    } finally {
+      setLoading(false)
+    }
+  }
+
   // 按状态分组
   const runningAssessments = assessments.filter((a) => a.status === 'running')
   const pendingAssessments = assessments.filter((a) => a.status === 'pending')
@@ -81,6 +102,16 @@ export default function AssessmentsPage() {
           <p className="text-gray-600 mt-1">查看和管理视频质量评估任务</p>
         </div>
         <div className="flex space-x-3">
+          {assessments.length > 0 && (
+            <button
+              onClick={handleClearAll}
+              disabled={loading}
+              className="flex items-center px-4 py-2 text-red-600 hover:text-red-700 border border-red-300 rounded-lg hover:bg-red-50"
+            >
+              <Trash2 className="h-5 w-5 mr-2" />
+              清空全部
+            </button>
+          )}
           <button
             onClick={loadAssessments}
             className="flex items-center px-4 py-2 text-gray-600 hover:text-gray-900 border border-gray-300 rounded-lg hover:bg-gray-50"

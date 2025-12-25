@@ -1,7 +1,7 @@
 """视频管理 API"""
-from typing import Optional
+from typing import Optional, List
 
-from fastapi import APIRouter, HTTPException, Depends, Query
+from fastapi import APIRouter, HTTPException, Depends, Query, Body
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -46,6 +46,90 @@ async def list_videos(
         total=total
     )
 
+
+# 注意：以下静态路由必须在 /{video_id} 动态路由之前定义
+
+@router.post("/batch-delete")
+async def batch_delete_videos(
+    video_ids: List[int] = Body(..., embed=True),
+    session: AsyncSession = Depends(get_session)
+):
+    """
+    批量删除视频
+
+    - **video_ids**: 要删除的视频 ID 列表
+    """
+    deleted_count = 0
+    failed_ids = []
+
+    for video_id in video_ids:
+        video = await session.get(Video, video_id)
+
+        if not video:
+            failed_ids.append(video_id)
+            continue
+
+        try:
+            # 删除文件
+            await upload_service.delete_file(video.file_path)
+            if video.thumbnail_path:
+                await upload_service.delete_file(video.thumbnail_path)
+
+            # 删除数据库记录
+            await session.delete(video)
+            deleted_count += 1
+        except Exception:
+            failed_ids.append(video_id)
+
+    await session.commit()
+
+    return {
+        "message": f"成功删除 {deleted_count} 个视频",
+        "deleted_count": deleted_count,
+        "failed_ids": failed_ids
+    }
+
+
+@router.delete("/clear-all")
+async def clear_all_videos(
+    session: AsyncSession = Depends(get_session)
+):
+    """
+    清空所有视频
+
+    删除所有上传的视频文件和数据库记录。
+    注意：这是一个危险操作，无法恢复。
+    """
+    # 查询所有视频
+    result = await session.execute(select(Video))
+    videos = result.scalars().all()
+
+    deleted_count = 0
+    failed_count = 0
+
+    for video in videos:
+        try:
+            # 删除文件
+            await upload_service.delete_file(video.file_path)
+            if video.thumbnail_path:
+                await upload_service.delete_file(video.thumbnail_path)
+
+            # 删除数据库记录
+            await session.delete(video)
+            deleted_count += 1
+        except Exception:
+            failed_count += 1
+
+    await session.commit()
+
+    return {
+        "message": f"成功清空 {deleted_count} 个视频",
+        "deleted_count": deleted_count,
+        "failed_count": failed_count
+    }
+
+
+# 以下是带 {video_id} 参数的动态路由
 
 @router.get("/{video_id}", response_model=VideoResponse)
 async def get_video(

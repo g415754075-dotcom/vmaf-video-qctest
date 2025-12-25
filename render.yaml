@@ -1,0 +1,52 @@
+# Render Blueprint - 完整部署配置
+# 文档: https://render.com/docs/blueprint-spec
+
+services:
+  # 后端 API 服务
+  - type: web
+    name: vmaf-qctest-api
+    runtime: docker
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: ./backend
+    region: singapore  # 亚洲区域，延迟更低
+    plan: free
+    healthCheckPath: /api/health
+    envVars:
+      - key: DEBUG
+        value: false
+      - key: HOST
+        value: 0.0.0.0
+      - key: PORT
+        value: 8000
+      - key: DATABASE_URL
+        value: sqlite+aiosqlite:///./vmaf_qctest.db
+      - key: CORS_ORIGINS
+        sync: false  # 需要手动设置，包含前端 URL
+      - key: VMAF_MODEL_PATH
+        value: /usr/share/model/vmaf_v0.6.1.json
+      - key: VMAF_4K_MODEL_PATH
+        value: /usr/share/model/vmaf_4k_v0.6.1.json
+    disk:
+      name: vmaf-data
+      mountPath: /app/data
+      sizeGB: 1  # 免费层最大 1GB
+
+  # 前端静态站点
+  - type: web
+    name: vmaf-qctest-frontend
+    runtime: static
+    buildCommand: cd frontend && npm install && npm run build
+    staticPublishPath: ./frontend/dist
+    region: singapore
+    plan: free
+    headers:
+      - path: /*
+        name: Cache-Control
+        value: public, max-age=31536000
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
+    envVars:
+      - key: VITE_API_URL
+        sync: false  # 需要手动设置为后端 URL
