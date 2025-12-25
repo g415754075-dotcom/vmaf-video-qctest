@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { Play, XCircle, Eye, BarChart2 } from 'lucide-react'
+import { Play, XCircle, Eye } from 'lucide-react'
 import { cn, formatDate, getStatusDisplay, getQualityLevel } from '@/utils'
 import type { AssessmentDetail } from '@/types'
 

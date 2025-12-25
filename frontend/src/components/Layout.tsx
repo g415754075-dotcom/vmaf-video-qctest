@@ -1,5 +1,5 @@
 import { Link, useLocation } from 'react-router-dom'
-import { Upload, BarChart3, FileText, Home, Settings } from 'lucide-react'
+import { Upload, BarChart3, FileText, Home } from 'lucide-react'
 import { cn } from '@/utils'
 
 interface LayoutProps {

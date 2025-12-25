@@ -36,7 +36,7 @@ export default function QualityChart({
     psnr: frame.psnr,
     // 添加对比数据
     ...comparisonData?.reduce(
-      (acc, item, i) => ({
+      (acc, item) => ({
         ...acc,
         [`${item.name}_${activeMetric}`]: item.data[index]?.[activeMetric],
       }),

@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
-import { ArrowLeft, FileText, Download, AlertTriangle } from 'lucide-react'
+import { ArrowLeft, FileText, AlertTriangle } from 'lucide-react'
 import QualityChart from '@/components/QualityChart'
 import { getAssessment, getFrameData, getStatistics, getProblemFrames, createReport } from '@/services/api'
 import { formatDate, getQualityLevel, getStatusDisplay, cn } from '@/utils'
-import type { AssessmentDetail, FrameQuality, QualityStatistics } from '@/types'
+import type { AssessmentDetail, FrameQuality } from '@/types'
 
 export default function AssessmentDetailPage() {
   const { id } = useParams<{ id: string }>()
@@ -47,7 +47,7 @@ export default function AssessmentDetailPage() {
 
     setGenerating(true)
     try {
-      const report = await createReport(
+      await createReport(
         `评估报告_${assessment.distorted_video.original_filename}`,
         [assessment.id]
       )

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Play, Trash2, RefreshCw, X, CheckSquare, Square, AlertTriangle } from 'lucide-react'
+import { Play, Trash2, RefreshCw, X, CheckSquare, Square } from 'lucide-react'
 import VideoUploader from '@/components/VideoUploader'
 import VideoCard from '@/components/VideoCard'
 import { useStore } from '@/stores/useStore'
@@ -117,9 +117,8 @@ export default function UploadPage() {
     }
   }
 
-  // 分离参考视频和待测视频
+  // 分离参考视频
   const referenceVideo = videos.find((v) => v.id === referenceVideoId)
-  const distortedVideos = videos.filter((v) => v.id !== referenceVideoId)
 
   // 获取已选择的待测视频列表
   const selectedVideos = videos.filter((v) => selectedDistortedIds.includes(v.id))

@@ -6,7 +6,7 @@ import { useStore } from '@/stores/useStore'
 import { getAssessments, startAssessment, cancelAssessment, clearAllAssessments } from '@/services/api'
 
 export default function AssessmentsPage() {
-  const { assessments, setAssessments, updateAssessment } = useStore()
+  const { assessments, setAssessments } = useStore()
   const [loading, setLoading] = useState(false)
 
   // 加载评估任务列表
