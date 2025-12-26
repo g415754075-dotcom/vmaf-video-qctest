@@ -90,7 +90,10 @@ export async function completeUpload(
   formData.append('original_filename', originalFilename)
   formData.append('video_type', videoType)
 
-  const response = await api.post<{ video: Video; message: string }>('/upload/complete', formData)
+  // 大文件合并、元信息提取、缩略图生成需要较长时间，设置 5 分钟超时
+  const response = await api.post<{ video: Video; message: string }>('/upload/complete', formData, {
+    timeout: 300000,
+  })
   return response.data
 }
 
