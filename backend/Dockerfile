@@ -1,17 +1,21 @@
-# 使用 linuxserver/ffmpeg 作为基础，它预编译了完整的 FFmpeg（包含 libvmaf）
-FROM linuxserver/ffmpeg:latest
+# 多阶段构建：从静态 FFmpeg 镜像复制二进制文件
+FROM mwader/static-ffmpeg:7.1 AS ffmpeg
+
+# 使用 Python 3.11 slim 作为运行时基础
+FROM python:3.11-slim-bookworm
 
 # 设置环境变量
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 ENV DEBIAN_FRONTEND=noninteractive
 
-# 安装 Python 3 和 pip
+# 从 ffmpeg 镜像复制静态编译的 ffmpeg 和 ffprobe
+COPY --from=ffmpeg /ffmpeg /usr/local/bin/ffmpeg
+COPY --from=ffmpeg /ffprobe /usr/local/bin/ffprobe
+
+# 安装必要的系统依赖
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
-    python3 \
-    python3-pip \
-    python3-venv \
     curl \
     && rm -rf /var/lib/apt/lists/* \
     && apt-get clean
@@ -34,10 +38,7 @@ WORKDIR /app
 # 先复制依赖文件
 COPY pyproject.toml poetry.lock* ./
 
-# 创建虚拟环境并安装依赖（避免系统 Python 限制）
-RUN python3 -m venv /opt/venv
-ENV PATH="/opt/venv/bin:$PATH"
-
+# 安装 Python 依赖
 RUN pip install --no-cache-dir --upgrade pip && \
     pip install --no-cache-dir poetry && \
     poetry config virtualenvs.create false && \
@@ -60,5 +61,5 @@ EXPOSE 8000
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
     CMD curl -f http://localhost:8000/api/health || exit 1
 
-# 启动命令（使用虚拟环境中的 uvicorn）
-CMD ["/opt/venv/bin/uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+# 启动命令
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
