@@ -1,8 +1,8 @@
 """应用配置"""
+import json
 from pathlib import Path
-from typing import List, Union
+from typing import List
 
-from pydantic import field_validator
 from pydantic_settings import BaseSettings
 
 
@@ -18,21 +18,16 @@ class Settings(BaseSettings):
     host: str = "0.0.0.0"
     port: int = 8000
 
-    # CORS 配置 - 支持逗号分隔的字符串或 JSON 数组
-    cors_origins: List[str] = ["http://localhost:5173", "http://127.0.0.1:5173"]
+    # CORS 配置 - 使用字符串，支持逗号分隔或 JSON 格式
+    cors_origins_str: str = "http://localhost:5173,http://127.0.0.1:5173"
 
-    @field_validator("cors_origins", mode="before")
-    @classmethod
-    def parse_cors_origins(cls, v: Union[str, List[str]]) -> List[str]:
-        """解析 CORS origins，支持逗号分隔的字符串"""
-        if isinstance(v, str):
-            # 如果是 JSON 格式的字符串，尝试解析
-            if v.startswith("["):
-                import json
-                return json.loads(v)
-            # 否则按逗号分隔
-            return [origin.strip() for origin in v.split(",") if origin.strip()]
-        return v
+    @property
+    def cors_origins(self) -> List[str]:
+        """解析 CORS origins"""
+        value = self.cors_origins_str
+        if value.startswith("["):
+            return json.loads(value)
+        return [origin.strip() for origin in value.split(",") if origin.strip()]
 
     # 文件上传配置
     upload_dir: Path = Path("uploads")

@@ -1,0 +1,229 @@
+{
+  "generated_at": "2025-12-11T08:36:18.230741",
+  "report_type": "batch_comparison",
+  "reference_video": {
+    "filename": "B003C001_180327_R1ZA.[1193856-1194343].ari3840x2160H.264.mov",
+    "resolution": "3840x2160",
+    "codec": "h264"
+  },
+  "summary": {
+    "total_assessments": 3,
+    "average_vmaf": 95.75,
+    "best_quality_video": "新版V2-B003C001_180327_R1ZA.MP4",
+    "best_efficiency_video": "新版-B003C001_180327_R1ZA.MP4"
+  },
+  "conclusion_table": [
+    {
+      "video_name": "新版V2-B003C001_180327_R1ZA.MP4",
+      "quality_stars": "★★★★★",
+      "quality_level": "优秀",
+      "quality_description": "画质非常清晰，几乎无损",
+      "recommendation": "强烈推荐",
+      "recommendation_icon": "🏆",
+      "efficiency_level": "很低",
+      "vmaf_score": 96.912239,
+      "bitrate_mbps": 23.640658
+    },
+    {
+      "video_name": "新版-B003C001_180327_R1ZA.MP4",
+      "quality_stars": "★★★★★",
+      "quality_level": "优秀",
+      "quality_description": "画质非常清晰，几乎无损",
+      "recommendation": "强烈推荐",
+      "recommendation_icon": "🏆",
+      "efficiency_level": "很低",
+      "vmaf_score": 95.889366,
+      "bitrate_mbps": 16.560947
+    },
+    {
+      "video_name": "旧版-B003C001_180327_R1ZA.MP4",
+      "quality_stars": "★★★★★",
+      "quality_level": "优秀",
+      "quality_description": "画质非常清晰，几乎无损",
+      "recommendation": "强烈推荐",
+      "recommendation_icon": "🏆",
+      "efficiency_level": "很低",
+      "vmaf_score": 94.440739,
+      "bitrate_mbps": 18.299978
+    }
+  ],
+  "assessments": [
+    {
+      "id": 1,
+      "distorted_video": {
+        "filename": "新版V2-B003C001_180327_R1ZA.MP4",
+        "resolution": "3840x2160",
+        "codec": "h264",
+        "bitrate": 23640658
+      },
+      "scores": {
+        "vmaf": 96.912239,
+        "vmaf_min": 28.694472,
+        "vmaf_max": 100.0,
+        "ssim": 0.9981961690140845,
+        "psnr": 49.370632605633794
+      },
+      "rating": {
+        "stars": "★★★★★",
+        "level": "优秀",
+        "description": "画质非常清晰，几乎无损",
+        "recommendation": "强烈推荐",
+        "recommendation_icon": "🏆",
+        "color": "#22c55e"
+      },
+      "efficiency": {
+        "value": 4.099388392658106,
+        "level": "很低",
+        "description": "性价比很低"
+      },
+      "statistics": {
+        "assessment_id": 1,
+        "vmaf": {
+          "mean": 96.91223890140846,
+          "min": 28.694472,
+          "max": 100.0,
+          "median": 98.497352,
+          "std": 9.404741623511786,
+          "p5": 96.776154,
+          "p95": 99.661744
+        },
+        "ssim": {
+          "mean": 0.9981961690140845,
+          "min": 0.934035,
+          "max": 0.999632,
+          "median": 0.999309,
+          "std": 0.00788596992129679,
+          "p5": 0.999005,
+          "p95": 0.999523
+        },
+        "psnr": {
+          "mean": 49.3706326056338,
+          "min": 30.392096,
+          "max": 53.246188,
+          "median": 49.722716,
+          "std": 3.061850752440904,
+          "p5": 47.33087,
+          "p95": 51.548736
+        }
+      }
+    },
+    {
+      "id": 3,
+      "distorted_video": {
+        "filename": "新版-B003C001_180327_R1ZA.MP4",
+        "resolution": "3840x2160",
+        "codec": "h264",
+        "bitrate": 16560947
+      },
+      "scores": {
+        "vmaf": 95.889366,
+        "vmaf_min": 28.949179,
+        "vmaf_max": 99.74999,
+        "ssim": 0.9980192112676054,
+        "psnr": 48.97757733802818
+      },
+      "rating": {
+        "stars": "★★★★★",
+        "level": "优秀",
+        "description": "画质非常清晰，几乎无损",
+        "recommendation": "强烈推荐",
+        "recommendation_icon": "🏆",
+        "color": "#22c55e"
+      },
+      "efficiency": {
+        "value": 5.790089540169412,
+        "level": "很低",
+        "description": "性价比很低"
+      },
+      "statistics": {
+        "assessment_id": 3,
+        "vmaf": {
+          "mean": 95.88936639436619,
+          "min": 28.949179,
+          "max": 99.74999,
+          "median": 97.487065,
+          "std": 9.295795220785424,
+          "p5": 95.461041,
+          "p95": 98.949633
+        },
+        "ssim": {
+          "mean": 0.9980192112676056,
+          "min": 0.934182,
+          "max": 0.999595,
+          "median": 0.999147,
+          "std": 0.007849449106994701,
+          "p5": 0.998696,
+          "p95": 0.999424
+        },
+        "psnr": {
+          "mean": 48.97757733802817,
+          "min": 30.404106,
+          "max": 52.959778,
+          "median": 49.341244,
+          "std": 3.0520736409618667,
+          "p5": 46.60348,
+          "p95": 51.368138
+        }
+      }
+    },
+    {
+      "id": 2,
+      "distorted_video": {
+        "filename": "旧版-B003C001_180327_R1ZA.MP4",
+        "resolution": "3840x2160",
+        "codec": "h264",
+        "bitrate": 18299978
+      },
+      "scores": {
+        "vmaf": 94.440739,
+        "vmaf_min": 28.870593,
+        "vmaf_max": 98.987712,
+        "ssim": 0.9979916760563379,
+        "psnr": 48.60071594366195
+      },
+      "rating": {
+        "stars": "★★★★★",
+        "level": "优秀",
+        "description": "画质非常清晰，几乎无损",
+        "recommendation": "强烈推荐",
+        "recommendation_icon": "🏆",
+        "color": "#22c55e"
+      },
+      "efficiency": {
+        "value": 5.1607023243415915,
+        "level": "很低",
+        "description": "性价比很低"
+      },
+      "statistics": {
+        "assessment_id": 2,
+        "vmaf": {
+          "mean": 94.44073866197184,
+          "min": 28.870593,
+          "max": 98.987712,
+          "median": 96.1,
+          "std": 9.076720166053617,
+          "p5": 92.773448,
+          "p95": 98.022581
+        },
+        "ssim": {
+          "mean": 0.997991676056338,
+          "min": 0.934676,
+          "max": 0.999628,
+          "median": 0.999097,
+          "std": 0.007777447030218023,
+          "p5": 0.998584,
+          "p95": 0.999439
+        },
+        "psnr": {
+          "mean": 48.600715943661974,
+          "min": 30.440484,
+          "max": 52.351031,
+          "median": 48.91308,
+          "std": 2.9331305561352847,
+          "p5": 46.232821,
+          "p95": 50.879838
+        }
+      }
+    }
+  ]
+}

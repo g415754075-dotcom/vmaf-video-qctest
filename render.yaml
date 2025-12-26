@@ -16,7 +16,7 @@ services:
         value: "false"
       - key: DATABASE_URL
         value: sqlite+aiosqlite:///./vmaf_qctest.db
-      - key: CORS_ORIGINS
+      - key: CORS_ORIGINS_STR
         value: https://vmaf-qctest-frontend.onrender.com,http://localhost:5173
       - key: VMAF_MODEL_PATH
         value: /usr/local/share/model/vmaf_v0.6.1.json
