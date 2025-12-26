@@ -13,7 +13,6 @@ ENV DEBIAN_FRONTEND=noninteractive
 COPY --from=ffmpeg /usr/local/bin/ffmpeg /usr/local/bin/ffmpeg
 COPY --from=ffmpeg /usr/local/bin/ffprobe /usr/local/bin/ffprobe
 COPY --from=ffmpeg /usr/local/lib /usr/local/lib
-COPY --from=ffmpeg /usr/local/share/model /usr/local/share/model
 
 # 安装运行时依赖
 RUN apt-get update && apt-get install -y --no-install-recommends \
@@ -27,6 +26,13 @@ ENV LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH
 
 # 验证 FFmpeg 和 libvmaf 可用
 RUN ffmpeg -version && ffmpeg -filters 2>&1 | grep libvmaf
+
+# 下载 VMAF 模型文件
+RUN mkdir -p /usr/local/share/model && \
+    curl -L -o /usr/local/share/model/vmaf_v0.6.1.json \
+    https://raw.githubusercontent.com/Netflix/vmaf/master/model/vmaf_v0.6.1.json && \
+    curl -L -o /usr/local/share/model/vmaf_4k_v0.6.1.json \
+    https://raw.githubusercontent.com/Netflix/vmaf/master/model/vmaf_4k_v0.6.1.json
 
 # 设置工作目录
 WORKDIR /app
