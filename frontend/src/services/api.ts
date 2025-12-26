@@ -66,6 +66,7 @@ export async function uploadChunk(
   formData.append('file_size', String(file.size))
 
   const response = await api.post('/upload/chunk', formData, {
+    timeout: 300000, // 5分钟超时
     onUploadProgress: (e) => {
       if (onProgress && e.total) {
         onProgress((e.loaded / e.total) * 100)

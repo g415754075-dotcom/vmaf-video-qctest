@@ -13,19 +13,15 @@ services:
     healthCheckPath: /api/health
     envVars:
       - key: DEBUG
-        value: false
-      - key: HOST
-        value: 0.0.0.0
-      - key: PORT
-        value: 8000
+        value: "false"
       - key: DATABASE_URL
         value: sqlite+aiosqlite:///./vmaf_qctest.db
       - key: CORS_ORIGINS
-        sync: false  # 需要手动设置，包含前端 URL
+        value: https://vmaf-qctest-frontend.onrender.com,http://localhost:5173
       - key: VMAF_MODEL_PATH
-        value: /usr/share/model/vmaf_v0.6.1.json
+        value: /usr/share/libvmaf/model/vmaf_v0.6.1.json
       - key: VMAF_4K_MODEL_PATH
-        value: /usr/share/model/vmaf_4k_v0.6.1.json
+        value: /usr/share/libvmaf/model/vmaf_4k_v0.6.1.json
     # 注意：免费层不支持持久化磁盘，上传的文件会在重启后丢失
 
   # 前端静态站点
@@ -44,4 +40,4 @@ services:
         destination: /index.html
     envVars:
       - key: VITE_API_URL
-        sync: false  # 需要手动设置为后端 URL
+        value: https://vmaf-qctest-api.onrender.com
