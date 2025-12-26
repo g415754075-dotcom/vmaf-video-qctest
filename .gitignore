@@ -33,12 +33,14 @@ logs/
 *.sqlite3
 
 # 上传的文件
-uploads/*
-!uploads/.gitkeep
+uploads/
+**/uploads/
+!**/uploads/.gitkeep
 
 # 报告文件
-reports/*
-!reports/.gitkeep
+reports/
+**/reports/
+!**/reports/.gitkeep
 
 # 系统文件
 .DS_Store
