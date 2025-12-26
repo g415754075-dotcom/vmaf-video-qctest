@@ -19,9 +19,9 @@ services:
       - key: CORS_ORIGINS
         value: https://vmaf-qctest-frontend.onrender.com,http://localhost:5173
       - key: VMAF_MODEL_PATH
-        value: /usr/share/libvmaf/model/vmaf_v0.6.1.json
+        value: /usr/local/share/model/vmaf_v0.6.1.json
       - key: VMAF_4K_MODEL_PATH
-        value: /usr/share/libvmaf/model/vmaf_4k_v0.6.1.json
+        value: /usr/local/share/model/vmaf_4k_v0.6.1.json
     # 注意：免费层不支持持久化磁盘，上传的文件会在重启后丢失
 
   # 前端静态站点
