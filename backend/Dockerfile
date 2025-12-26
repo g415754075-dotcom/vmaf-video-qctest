@@ -6,7 +6,7 @@ ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 ENV DEBIAN_FRONTEND=noninteractive
 
-# 安装 Python 3.11
+# 安装 Python 3 和 pip
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
     python3 \
@@ -21,9 +21,6 @@ RUN ffmpeg -version && \
     ffmpeg -filters 2>&1 | grep -q libvmaf || \
     (echo "ERROR: FFmpeg does not have libvmaf support" && exit 1)
 
-# 检查 VMAF 模型文件位置
-RUN find /usr -name "vmaf*.json" 2>/dev/null || echo "VMAF models not found in /usr"
-
 # 下载 VMAF 模型文件
 RUN mkdir -p /usr/local/share/model && \
     curl -L -o /usr/local/share/model/vmaf_v0.6.1.json \
@@ -37,8 +34,12 @@ WORKDIR /app
 # 先复制依赖文件
 COPY pyproject.toml poetry.lock* ./
 
-# 安装 Poetry 并安装依赖
-RUN pip3 install --no-cache-dir --break-system-packages poetry && \
+# 创建虚拟环境并安装依赖（避免系统 Python 限制）
+RUN python3 -m venv /opt/venv
+ENV PATH="/opt/venv/bin:$PATH"
+
+RUN pip install --no-cache-dir --upgrade pip && \
+    pip install --no-cache-dir poetry && \
     poetry config virtualenvs.create false && \
     poetry install --no-interaction --no-ansi --no-root --only main
 
@@ -59,5 +60,5 @@ EXPOSE 8000
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
     CMD curl -f http://localhost:8000/api/health || exit 1
 
-# 启动命令
-CMD uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000}
+# 启动命令（使用虚拟环境中的 uvicorn）
+CMD ["/opt/venv/bin/uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
